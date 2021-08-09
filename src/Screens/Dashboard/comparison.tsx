@@ -5,6 +5,7 @@ import { Fonts } from '../../Constants/Fonts';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useState } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const comparison = ({ navigation, route }) => {
     const [selected, setSelected] = useState('');
@@ -89,67 +90,92 @@ const comparison = ({ navigation, route }) => {
                 { fontFamily: Fonts.MetropolisMedium }]}>
                     {Array.from(new Set(sub.map(x => x.categoryName))).join(' / ')} </Text>
             </View>
-            <View style={{
-                flex: 1,
-                paddingHorizontal: 19,
-            }}>
-                {renderSubCat(sub[0], sub[1])}
-                {renderSubCat(sub[1], sub[0])}
-                <View style={{ marginTop: 25 }}>
-                    <View style={{
-                        alignItems: "center",
-                        flexDirection: "row",
-                    }}>
-                        <Text style={styles.text}> Filters </Text>
-                        <FontAwesome5 name="filter" size={16} />
-                    </View>
-                    <View style={styles.filter}>
-                        <TouchableOpacity
-                            style={[styles.btn,
+            <ScrollView style={{ flex: 1 }}>
+                <View style={{
+                    flex: 1,
+                    paddingHorizontal: 19,
+                }}>
+                    {renderSubCat(sub[0], sub[1])}
+                    {renderSubCat(sub[1], sub[0])}
+                    <View style={{ marginTop: 25 }}>
+                        <View style={{
+                            alignItems: "center",
+                            flexDirection: "row",
+                        }}>
+                            <Text style={styles.text}> Filters </Text>
+                            <FontAwesome5 name="filter" size={16} />
+                        </View>
+                        <View style={styles.filter}>
+                            <TouchableOpacity
+                                style={[styles.btn,
+                                {
+                                    backgroundColor: selected === "density" ?
+                                        Colors.maincolor : Colors.lightpink
+                                }]}
+                                onPress={() => setSelected('density')}>
+                                <Text style={[styles.btntxt,
+                                {
+                                    color: selected === "density" ?
+                                        Colors.white : "black",
+                                }
+                                ]}> DENSITY </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.btn,
                             {
-                                backgroundColor: selected === "density" ?
+                                backgroundColor: selected === "price" ?
                                     Colors.maincolor : Colors.lightpink
-                            }]}
-                            onPress={() => setSelected('density')}>
-                            <Text style={[styles.btntxt,
-                            {
-                                color: selected === "density" ?
-                                    Colors.white : "black",
                             }
-                            ]}> DENSITY </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn,
-                        {
-                            backgroundColor: selected === "price" ?
-                                Colors.maincolor : Colors.lightpink
-                        }
-                        ]}
-                            onPress={() => setSelected('price')}>
-                            <Text style={[styles.btntxt,
-                            {
-                                color: selected === "price" ?
-                                    Colors.white : "black",
-                            }]}> PRICE </Text>
-                        </TouchableOpacity>
+                            ]}
+                                onPress={() => setSelected('price')}>
+                                <Text style={[styles.btntxt,
+                                {
+                                    color: selected === "price" ?
+                                        Colors.white : "black",
+                                }]}> PRICE </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                    {selected ?
+                        <View style={{ marginTop: 20, paddingStart: 10 }}>
+                            {
+                                sub[0][selected] == sub[1][selected] ?
+                                    <Text style={{
+                                        fontSize: 17,
+                                        fontFamily: Fonts.MetropolisMedium
+                                    }}>
+                                        <Text style={{
+                                            color: Colors.maincolor,
+                                            fontFamily: Fonts.MetropolisBold
+                                        }}>
+                                            {sub[0][selected] >= sub[1][selected] ?
+                                                sub[0].subCatName :
+                                                sub[0].subCatName}
+                                        </Text> / <Text style={{
+                                            color: Colors.maincolor,
+                                            fontFamily: Fonts.MetropolisBold
+                                        }}> {sub[0][selected] >= sub[1][selected] ?
+                                            sub[1].subCatName : sub[0].subCatName} </Text> both having equal
+                                    </Text>
+                                    :
+                                    <Text style={{
+                                        fontSize: 17,
+                                        fontFamily: Fonts.MetropolisMedium,
+                                    }}>
+                                        <Text style={{
+                                            color: Colors.maincolor,
+                                            fontFamily: Fonts.MetropolisBold
+                                        }}>{sub[0][selected] > sub[1][selected] ? sub[1].subCatName : sub[0].subCatName}
+                                        </Text> is better than
+                                        <Text style={{
+                                            color: Colors.maincolor,
+                                            fontFamily: Fonts.MetropolisBold
+                                        }}> {sub[0][selected] > sub[1][selected] ? sub[0].subCatName : sub[1].subCatName}</Text> {"\n"}
+                                        because lower the {selected} better the Fiber.  </Text>
+                            }
+                        </View> : null
+                    }
                 </View>
-                <View style={{ marginTop: 20, paddingStart: 10 }}>
-                    <Text style={{
-                        fontSize: 17,
-                        fontFamily: Fonts.MetropolisMedium,
-                    }}>
-                        <Text style={{
-                            color: Colors.maincolor,
-                            fontFamily: Fonts.MetropolisBold
-                        }}> {sub[0][selected] > sub[1][selected] ? sub[1].subCatName : sub[0].subCatName}
-                        </Text> is better than
-                        <Text style={{
-                            color: Colors.maincolor,
-                            fontFamily: Fonts.MetropolisBold
-                        }}> {sub[0][selected] > sub[1][selected] ? sub[0].subCatName : sub[1].subCatName}</Text> {"\n"}
-                        because lower the {selected} better the Fiber.  </Text>
-                </View>
-            </View>
+            </ScrollView>
             <TouchableOpacity style={styles.back}
                 onPress={() => navigation.navigate("welcome")}>
                 <Text style={styles.backtxt}> BACK TO HOME </Text>

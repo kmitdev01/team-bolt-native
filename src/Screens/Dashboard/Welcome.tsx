@@ -197,7 +197,7 @@ const Welcome = ({ navigation }) => {
     return (
         <>
             <ImgHeader />
-            <View style={{ flex: 1, paddingHorizontal: 15 }}>
+            <View style={{ flex: 1, paddingHorizontal: 12, paddingBottom: 10 }}>
                 <FlatList
                     data={list}
                     renderItem={({ item }) => {
@@ -234,15 +234,15 @@ const Welcome = ({ navigation }) => {
                             <View style={{ backgroundColor: Colors.white }}>
                                 <View style={styles.sub}>
                                     <Text style={styles.category}> Category</Text>
-                                    <Text style={styles.category}> Sub Category </Text>
+                                    <Text style={[styles.category, { marginEnd: 28 }]}> Sub Category </Text>
                                 </View>
                                 <FlatList
                                     data={getSelectedItems()}
                                     renderItem={({ item }) => {
                                         return (
                                             <View style={styles.selectview}>
-                                                <ExpandableText text={item.categoryName} />
-                                                <ExpandableText text={item.subCatName} />
+                                                <ExpandableText text={item.categoryName} style={{ fontFamily: Fonts.MetropolisSemiBold }} />
+                                                <ExpandableText text={item.subCatName} style={{ fontFamily: Fonts.MetropolisSemiBold }} />
                                                 {/* <View style={{ flex: 1, alignItems: "flex-end" }}> */}
                                                 <Entypo name="squared-cross"
                                                     size={20}
@@ -278,6 +278,7 @@ const ExpandableText = ({ text, style }) => {
                 styles.expand, style
             ]}
             numberOfLines={numLines}
+
             onPress={() =>
                 setNumLines(numLines === 1000 ? 1 : 1000)}>{text}
         </Text>
@@ -297,12 +298,12 @@ const ListItem = ({ item, onSelect, indices }) => {
                         alignItems: "center",
                         borderRadius: 10,
                         margin: 8,
-                        elevation: 3
+                        elevation: 3,
                     }}
                         onPress={() => {
                             onSelect(id)
                         }}>
-                        <View style={{ padding: 10 }}>
+                        <View style={{ padding: 10, }}>
                             <Image source={{ uri: img }}
                                 style={{
                                     width: 155,
@@ -318,11 +319,11 @@ const ListItem = ({ item, onSelect, indices }) => {
                         }}>
                             <Text style={{
                                 fontSize: 17,
-                                fontFamily: Fonts.MetropolisBold,
-                                textAlign: "left",
+                                fontFamily: Fonts.MetropolisSemiBold,
                                 flex: 1,
-                                padding: 3
-                            }}> {item.subCatName}
+                                padding: 3,
+                                textTransform: "capitalize"
+                            }}>{item.subCatName}
                             </Text>
                             {checked ?
                                 <View style={{ marginStart: 10 }}>
@@ -338,11 +339,11 @@ const ListItem = ({ item, onSelect, indices }) => {
 
     return (
         <View style={styles.main}>
-            <TouchableOpacity style={styles.renderitem}
+            <TouchableOpacity style={[styles.renderitem]}
                 onPress={() => setexpand(!expand)}>
                 <ExpandableText
                     text={item.catName}
-                    style={{ fontSize: 17 }} />
+                    style={{ fontSize: 16 }} />
                 {/* <Text style={{
                     fontSize: 17,
                     fontFamily: Fonts.MetropolisBold
@@ -358,13 +359,13 @@ const ListItem = ({ item, onSelect, indices }) => {
                     }}> {item.subCategoryData.length} items</Text>
                     <View style={styles.arrow}>
                         <Ionicons
-                            name="caret-down-outline"
+                            name={!expand ? "caret-down-outline" : "caret-up-outline"}
                             color={Colors.white}
                             size={16} />
                     </View>
                 </View>
             </TouchableOpacity>
-            <View style={{ paddingHorizontal: 10 }}>
+            <View style={{ alignItems: "center", }}>
                 <FlatList
                     data={item.subCategoryData}
                     renderItem={({ item, }) => {
@@ -394,13 +395,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         padding: 18,
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
     },
     main: {
-        backgroundColor: Colors.white,
-        marginTop: 18,
+        marginTop: 12,
         borderRadius: 10,
-
+        flex: 1,
+        backgroundColor: Colors.white
     },
     arrow: {
         backgroundColor: Colors.maincolor,
@@ -465,13 +466,15 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.lightpink,
         borderRadius: 20,
         marginTop: 10,
-        paddingHorizontal: 15,
-        alignItems: "center"
+        paddingHorizontal: 20,
+        alignItems: "center",
+
     },
     expand: {
         fontSize: 15,
         flex: 1,
         marginEnd: 15,
         fontFamily: Fonts.MetropolisBold,
+        textTransform: "capitalize"
     }
 })
