@@ -12,10 +12,10 @@ const MainNavigator = () => {
     return (
         <NavigationContainer >
             <Stack.Navigator
-                initialRouteName="Login"
+                initialRouteName="welcome"
                 screenOptions={{ headerShown: false }}
             >
-                <Stack.Screen name="Login" component={Login} />
+                {/* <Stack.Screen name="Login" component={Login} /> */}
                 <Stack.Screen name={"welcome"} component={Welcome} />
                 <Stack.Screen name="comparison" component={comparison} />
             </Stack.Navigator>

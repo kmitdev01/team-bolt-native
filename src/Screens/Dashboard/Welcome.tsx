@@ -7,131 +7,24 @@ import {
     TouchableOpacity,
     FlatList,
     TouchableOpacityBase,
-    TouchableHighlightBase
+    TouchableHighlightBase,
+    ActivityIndicator,
+    RefreshControl,
+    ScrollView
 } from 'react-native';
 import { Colors } from '../../Constants/Colors/Colors';
 import ImgHeader from '../../Components/Imgheader';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Fonts } from '../../Constants/Fonts';
-import { Images } from '../../Assets';
 import { useState } from 'react';
 import Octicons from 'react-native-vector-icons/Octicons'
 import Entypo from 'react-native-vector-icons/Entypo'
-import { Getcategory, imgurl } from '../../API/Api';
+import { Getcategory } from '../../API/Api';
 import { useEffect } from 'react';
 import AlertModal from '../../Components/Modal/Alert';
-import { TouchableOpacityComponent } from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 
-const DATA = [
-    {
-        id: 1,
-        header: "Fibers and Polymers",
-        items: "9 Items",
-        childlist: [
-            {
-                id: 4,
-                color: "#FFF8E7",
-                img: Images.first,
-                text: "Zylon Fiber"
-            },
-            {
-                id: 5,
-                color: "#EFDFE7",
-                img: Images.second,
-                text: "Carbon Fiber"
-            },
-            {
-                id: 6,
-                color: "#E9E0D2",
-                img: Images.th,
-                text: "Nylon Fiber"
-            },
-            {
-                id: 7,
-                color: "#F0DED5",
-                img: Images.fth,
-                text: "Leather"
-            },
-            {
-                id: 8,
-                color: "#E0E5FD",
-                img: Images.fif,
-                text: "Polyester"
-            },
-            {
-                id: 9,
-                color: "#FDF9DF",
-                img: Images.six,
-                text: "Rayon"
-            },
-            {
-                id: 10,
-                color: "#DFECEF",
-                img: Images.sev,
-                text: "High density Polyethylene"
-            },
-            {
-                id: 11,
-                color: "#E6EEF3",
-                img: Images.eth,
-                text: "Low density polyethylene"
-            },
-            {
-                id: 12,
-                color: "#E8E8F0",
-                img: Images.nin,
-                text: "Polystyrene"
-            },
-
-        ]
-    },
-    {
-        id: 2,
-        header: "Metals",
-        items: "6 Items",
-        childlist: [
-
-            {
-                id: 13,
-                color: "#E0E5FD",
-                img: Images.fif,
-                text: "Polyester"
-            },
-            {
-                id: 14,
-                color: "#FDF9DF",
-                img: Images.six,
-                text: "Rayon"
-            },
-            {
-                id: 15,
-                color: "#DFECEF",
-                img: Images.sev,
-                text: "High density Polyethylene"
-            },
-        ]
-    },
-    {
-        id: 3,
-        header: "Plastics",
-        items: "4 Items",
-        childlist: [
-            {
-                id: 16,
-                color: "#E6EEF3",
-                img: Images.eth,
-                text: "Low density polyethylene"
-            },
-            {
-                id: 17,
-                color: "#E8E8F0",
-                img: Images.nin,
-                text: "Polystyrene"
-            },
-        ]
-    },
-]
 
 const Welcome = ({ navigation }) => {
     const [indices, setIndices] = useState([]);
@@ -139,6 +32,8 @@ const Welcome = ({ navigation }) => {
     const [select, setselect] = useState(false)
     const [list, setList] = useState([]);
     const [alert, setalert] = useState("")
+    const [loading, setloading] = useState(false)
+    const [refreshing, setRefreshing] = React.useState(false);
 
     const onSelect = idx => {
         let newValues = [...indices];
@@ -183,89 +78,127 @@ const Welcome = ({ navigation }) => {
     }
 
     useEffect(() => {
+        setloading(true)
         Getcategory()
             .then(Response => {
+                setloading(false)
                 console.log(Response.data.data, " get category")
                 setList(Response?.data?.data)
             })
             .catch(err => {
+                setloading(false)
                 console.log(err)
             })
     }, [])
+
+    const wait = (timeout) => {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+    }
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
 
 
     return (
         <>
             <ImgHeader />
-            <View style={{ flex: 1, paddingHorizontal: 12, paddingBottom: 10 }}>
-                <FlatList
-                    data={list}
-                    renderItem={({ item }) => {
-                        return <ListItem item={item} indices={indices} onSelect={onSelect} />
-                    }}
-                    keyExtractor={(item) => item._id}
-                />
-                <AlertModal
-                    visible={modal}
-                    modalpress={() => setmodal(!modal)}
-                    heading={"Alert"}
-                    text={alert}
-                    okpress={() => setmodal(!modal)}
-                />
-            </View>
-            {indices.length > 0 ?
-                <View style={styles.bottomview}>
-                    <TouchableOpacity
-                        style={[styles.round,
-                        { backgroundColor: !select ? Colors.maincolor : Colors.gray }]}
-                        onPress={() => setselect(!select)}>
-                        <Octicons
-                            name={!select ? "chevron-up" : "chevron-down"}
-                            size={25}
-                            color={!select ? Colors.white : Colors.maincolor} />
-                        <Octicons
-                            name={!select ? "chevron-up" : "chevron-down"}
-                            size={25}
-                            color={!select ? Colors.white : Colors.maincolor}
-                            style={{ position: "absolute", top: 20, left: 40, }} />
-                    </TouchableOpacity>
-                    <View style={styles.compareview}>
-                        {select ?
-                            <View style={{ backgroundColor: Colors.white }}>
-                                <View style={styles.sub}>
-                                    <Text style={styles.category}> Category</Text>
-                                    <Text style={[styles.category, { marginEnd: 28 }]}> Sub Category </Text>
-                                </View>
-                                <FlatList
-                                    data={getSelectedItems()}
-                                    renderItem={({ item }) => {
-                                        return (
-                                            <View style={styles.selectview}>
-                                                <ExpandableText text={item.categoryName} style={{ fontFamily: Fonts.MetropolisSemiBold }} />
-                                                <ExpandableText text={item.subCatName} style={{ fontFamily: Fonts.MetropolisSemiBold }} />
-                                                {/* <View style={{ flex: 1, alignItems: "flex-end" }}> */}
-                                                <Entypo name="squared-cross"
-                                                    size={20}
-                                                    color={Colors.maincolor}
-                                                    onPress={() => cancel(item._id)} />
-                                                {/* </View> */}
-                                            </View>
-                                        )
-                                    }}
-                                    keyExtractor={(item) => item._id}
-                                />
-                            </View> : null
-                        }
-                        <TouchableOpacity style={[styles.compare,
-                        { backgroundColor: indices.length == 2 ? Colors.maincolor : Colors.gray }]}
-                            onPress={() =>
-                                indices.length < 2 ? alertchange() :
-                                    navigation.navigate('comparison', { sub: getSelectedItems() })} >
-                            <Text style={[styles.txt,
-                            { color: indices.length == 2 ? Colors.white : "black" }]}> COMPARE </Text>
-                        </TouchableOpacity>
+            {loading ? <ActivityIndicator
+                size={"large"}
+                color={Colors.maincolor}
+                style={{ flex: 1 }} /> :
+                <ScrollView
+                    contentContainerStyle={styles.scrollView}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    } >
+                    <View style={{
+                        flex: 1,
+                        paddingHorizontal: 12,
+                        paddingBottom: 12
+                    }}>
+                        <FlatList
+                            data={list}
+                            renderItem={({ item }) => {
+                                return <ListItem
+                                    item={item}
+                                    indices={indices}
+                                    onSelect={onSelect}
+                                    getSelectedItems={getSelectedItems}
+                                    cancel={cancel} />
+                            }}
+                            keyExtractor={(item) => item._id}
+                        />
+                        <AlertModal
+                            visible={modal}
+                            modalpress={() => setmodal(!modal)}
+                            heading={"Alert"}
+                            text={alert}
+                            okpress={() => setmodal(!modal)}
+                        />
+                        <View style={{ height: 52 }} />
                     </View>
-                </View> : null}
+                </ScrollView>
+            }
+            {
+                indices.length > 0 ?
+                    <View style={styles.bottomview}>
+                        <TouchableOpacity
+                            style={[styles.round,
+                            { backgroundColor: !select ? Colors.maincolor : Colors.gray }]}
+                            onPress={() => setselect(!select)}>
+                            <Octicons
+                                name={!select ? "chevron-up" : "chevron-down"}
+                                size={25}
+                                color={!select ? Colors.white : Colors.maincolor} />
+                            <Octicons
+                                name={!select ? "chevron-up" : "chevron-down"}
+                                size={25}
+                                color={!select ? Colors.white : Colors.maincolor}
+                                style={{ position: "absolute", top: 20, left: 40, }} />
+                        </TouchableOpacity>
+                        <View style={styles.compareview}>
+                            {select ?
+                                <View style={{ backgroundColor: Colors.white, paddingHorizontal: 12 }}>
+                                    <View style={styles.sub}>
+                                        <Text style={styles.category}>Category</Text>
+                                        <Text style={[styles.category, { marginEnd: 28 }]}> Sub Category </Text>
+                                    </View>
+                                    <FlatList
+                                        data={getSelectedItems()}
+                                        renderItem={({ item }) => {
+                                            return (
+                                                <View style={styles.selectview}>
+                                                    <ExpandableText text={item.categoryName} style={{ fontFamily: Fonts.MetropolisSemiBold }} />
+                                                    <ExpandableText text={item.subCatName} style={{ fontFamily: Fonts.MetropolisSemiBold }} />
+                                                    {/* <View style={{ flex: 1, alignItems: "flex-end" }}> */}
+                                                    <Entypo name="squared-cross"
+                                                        size={20}
+                                                        color={Colors.maincolor}
+                                                        onPress={() => cancel(item._id)} />
+                                                    {/* </View> */}
+                                                </View>
+                                            )
+                                        }}
+                                        keyExtractor={(item) => item._id}
+                                    />
+                                </View> : null
+                            }
+                            <TouchableOpacity activeOpacity={1} style={[styles.compare,
+                            { backgroundColor: indices.length == 2 ? Colors.maincolor : Colors.gray }]}
+                                onPress={() =>
+                                    indices.length < 2 ? alertchange() :
+                                        navigation.navigate('comparison', { sub: getSelectedItems() })} >
+                                <Text style={[styles.txt,
+                                { color: indices.length == 2 ? Colors.white : "black" }]}> COMPARE </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View> : null
+            }
         </>
     )
 }
@@ -285,53 +218,55 @@ const ExpandableText = ({ text, style }) => {
     )
 }
 
-const ListItem = ({ item, onSelect, indices }) => {
+const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
     const [expand, setexpand] = useState(false)
 
-    const List = ({ item, checked, id, onSelect }) => {
-        const img = `${imgurl}/${item.catImg}`
+    const List = ({ item, checked, id, onSelect, }) => {
+
         return (
             <>
                 {expand ?
-                    <TouchableOpacity style={{
-                        backgroundColor: !checked ? Colors.white : "#EFDFE7",
-                        alignItems: "center",
-                        borderRadius: 10,
-                        margin: 8,
-                        elevation: 3,
-                    }}
-                        onPress={() => {
-                            onSelect(id)
-                        }}>
-                        <View style={{ padding: 10, }}>
-                            <Image source={{ uri: img }}
-                                style={{
-                                    width: 155,
-                                    height: 110,
-                                    borderRadius: 10
-                                }}
-                                resizeMode="cover" />
-                        </View>
-                        <View style={{
-                            flexDirection: "row",
-                            flex: 1,
-                            paddingHorizontal: 7
-                        }}>
-                            <Text style={{
-                                fontSize: 17,
-                                fontFamily: Fonts.MetropolisSemiBold,
+                    <>
+                        <TouchableOpacity style={{
+                            backgroundColor: !checked ? Colors.white : "#EFDFE7",
+                            alignItems: "center",
+                            borderRadius: 10,
+                            margin: 8,
+                            elevation: 3,
+                        }}
+                            onPress={() => {
+                                onSelect(id)
+                            }}>
+                            <View style={{ padding: 10, }}>
+                                <Image source={{ uri: item.catImg }}
+                                    style={{
+                                        width: 140,
+                                        height: 95,
+                                        borderRadius: 10
+                                    }}
+                                    resizeMode="cover" />
+                            </View>
+                            <View style={{
+                                flexDirection: "row",
                                 flex: 1,
-                                padding: 3,
-                                textTransform: "capitalize"
-                            }}>{item.subCatName}
-                            </Text>
-                            {checked ?
-                                <View style={{ marginStart: 10 }}>
-                                    <Ionicons name={"ios-checkmark-circle"}
-                                        size={25} color={Colors.maincolor} />
-                                </View> : null}
-                        </View>
-                    </TouchableOpacity> : null
+                                paddingHorizontal: 7
+                            }}>
+                                <Text style={{
+                                    fontSize: 15,
+                                    fontFamily: Fonts.MetropolisSemiBold,
+                                    flex: 1,
+                                    padding: 3,
+                                    textTransform: "capitalize"
+                                }}> {item.subCatName}
+                                </Text>
+                                {checked ?
+                                    <View style={{ marginStart: 10 }}>
+                                        <Ionicons name={"ios-checkmark-circle"}
+                                            size={25} color={Colors.maincolor} />
+                                    </View> : null}
+                            </View>
+                        </TouchableOpacity>
+                    </> : null
                 }
             </>
         )
@@ -365,7 +300,41 @@ const ListItem = ({ item, onSelect, indices }) => {
                     </View>
                 </View>
             </TouchableOpacity>
-            <View style={{ alignItems: "center", }}>
+
+            <View style={{ alignItems: "center" }}>
+                <View style={{
+                    borderWidth: 1,
+                    alignSelf: "flex-start",
+                }}>
+
+                    <FlatList
+                        data={getSelectedItems()}
+
+                        renderItem={({ item }) => {
+                            return (
+                                <View style={{
+                                    padding: 4,
+                                    borderRadius: 20,
+                                    backgroundColor: Colors.maincolor,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    margin: 7,
+                                    flexDirection: "row"
+                                }}>
+                                    <Text style={{
+                                        color: Colors.white
+                                    }}> {item.subCatName} </Text>
+                                    <FontAwesome
+                                        name="window-close"
+                                        color={Colors.white}
+                                        size={13}
+                                        style={{ marginStart: 3, }}
+                                        onPress={() => cancel()} />
+                                </View>
+                            )
+                        }} />
+                </View>
+
                 <FlatList
                     data={item.subCategoryData}
                     renderItem={({ item, }) => {
@@ -382,19 +351,23 @@ const ListItem = ({ item, onSelect, indices }) => {
                     numColumns={2}
                 />
             </View>
-        </View>
+        </View >
     )
 }
 
 export default Welcome
 
 const styles = StyleSheet.create({
+
+    scrollView: {
+        flex: 1
+    },
     renderitem: {
         // height: 50,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: 18,
+        padding: 16,
         paddingHorizontal: 12,
     },
     main: {

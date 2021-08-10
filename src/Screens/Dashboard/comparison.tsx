@@ -74,21 +74,29 @@ const comparison = ({ navigation, route }) => {
     return (
         <>
             <View style={styles.container}>
-                <View style={styles.header}>
+                <View style={{ marginTop: 12 }}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name="chevron-back" size={25}
                             color={Colors.white} />
                     </TouchableOpacity>
+                </View>
+                <View style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flex: 1,
+                }}>
                     <Text style={[styles.txt, {
-                        marginStart: 95,
                         fontFamily: Fonts.MetropolisSemiBold,
                         fontSize: 18,
+                    }]}>COMPARISON </Text>
+                    <Text style={[styles.txt,
+                    {
+                        fontFamily: Fonts.MetropolisMedium,
+                        marginTop: 3
                     }]}>
-                        COMPARISON </Text>
+                        {Array.from(new Set(sub.map(x => x.categoryName))).join(' / ')} </Text>
+
                 </View>
-                <Text style={[styles.txt,
-                { fontFamily: Fonts.MetropolisMedium }]}>
-                    {Array.from(new Set(sub.map(x => x.categoryName))).join(' / ')} </Text>
             </View>
             <ScrollView style={{ flex: 1 }}>
                 <View style={{
@@ -154,7 +162,7 @@ const comparison = ({ navigation, route }) => {
                                             color: Colors.maincolor,
                                             fontFamily: Fonts.MetropolisBold
                                         }}> {sub[0][selected] >= sub[1][selected] ?
-                                            sub[1].subCatName : sub[0].subCatName} </Text> both having equal
+                                            sub[1].subCatName : sub[0].subCatName} </Text> both having equal {selected}
                                     </Text>
                                     :
                                     <Text style={{
@@ -192,8 +200,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.maincolor,
         borderBottomLeftRadius: 22,
         borderBottomRightRadius: 22,
-        justifyContent: "space-evenly",
-        alignItems: "center",
+        flexDirection: "row",
+        paddingHorizontal: 20
     },
     txt: {
         color: Colors.white,
@@ -201,10 +209,10 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.MetropolisMedium,
     },
     header: {
-        flexDirection: "row",
+        paddingStart: 10,
         width: "100%",
-        paddingStart: 25,
-        top: 6
+
+
     },
     main: {
         backgroundColor: Colors.white,
@@ -227,7 +235,7 @@ const styles = StyleSheet.create({
         color: "black"
     },
     text: {
-        fontSize: 19,
+        fontSize: 18,
         fontFamily: Fonts.MetropolisBold,
     },
     btn: {

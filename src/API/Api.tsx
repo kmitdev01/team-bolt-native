@@ -3,8 +3,7 @@ import axios from 'axios'
 import { getData } from './AsyncStorage'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 const baseurl = 'https://team-bolt.herokuapp.com/api'
-export const imgurl = 'https://team-bolt.herokuapp.com/images/'
-
+// export const imgurl = 'https://team-bolt.herokuapp.com/images/'
 
 export const LoginApi = (body) => {
     return new Promise((resolve, reject) => {
@@ -24,9 +23,9 @@ export const Getcategory = async () => {
     console.log(token, "tokken get myy ............. ")
 
     return await axios.get(`${baseurl}/category`, {
-        headers: {
-            Authorization: token
-        }
+        // headers: {
+        //     Authorization: token
+        // }
     })
         .then(response => {
             return (response)
