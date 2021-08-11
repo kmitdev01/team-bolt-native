@@ -55,11 +55,15 @@ const Welcome = ({ navigation }) => {
         const selectedItems = [];
         list.forEach(x => {
             x.subCategoryData.forEach(y => {
+                console.log (x.subCategoryData,"subdatat")
                 if (indices.includes(y._id)) {
                     selectedItems.push({ ...y, categoryName: x.catName })
+
                 }
             })
         })
+        // console.log({selectedItems});
+
         return selectedItems;
     }
 
@@ -129,6 +133,7 @@ const Welcome = ({ navigation }) => {
                                     indices={indices}
                                     onSelect={onSelect}
                                     getSelectedItems={getSelectedItems}
+                                    list={list}
                                     cancel={cancel} />
                             }}
                             keyExtractor={(item) => item._id}
@@ -218,8 +223,11 @@ const ExpandableText = ({ text, style }) => {
     )
 }
 
-const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
+const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel, list }) => {
     const [expand, setexpand] = useState(false)
+
+
+
 
     const List = ({ item, checked, id, onSelect, }) => {
 
@@ -231,7 +239,7 @@ const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
                             backgroundColor: !checked ? Colors.white : "#EFDFE7",
                             alignItems: "center",
                             borderRadius: 10,
-                            margin: 8,
+                            margin: 12,
                             elevation: 3,
                         }}
                             onPress={() => {
@@ -240,8 +248,8 @@ const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
                             <View style={{ padding: 10, }}>
                                 <Image source={{ uri: item.catImg }}
                                     style={{
-                                        width: 140,
-                                        height: 95,
+                                        width: 145,
+                                        height: 100,
                                         borderRadius: 10
                                     }}
                                     resizeMode="cover" />
@@ -249,7 +257,7 @@ const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
                             <View style={{
                                 flexDirection: "row",
                                 flex: 1,
-                                paddingHorizontal: 7
+                                paddingHorizontal: 8
                             }}>
                                 <Text style={{
                                     fontSize: 15,
@@ -257,7 +265,7 @@ const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
                                     flex: 1,
                                     padding: 3,
                                     textTransform: "capitalize"
-                                }}> {item.subCatName}
+                                }}>{item.subCatName}
                                 </Text>
                                 {checked ?
                                     <View style={{ marginStart: 10 }}>
@@ -279,10 +287,6 @@ const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
                 <ExpandableText
                     text={item.catName}
                     style={{ fontSize: 16 }} />
-                {/* <Text style={{
-                    fontSize: 17,
-                    fontFamily: Fonts.MetropolisBold
-                }}> {item.catName}</Text> */}
                 <View style={{
                     flexDirection: "row",
                     alignItems: "center"
@@ -301,40 +305,30 @@ const ListItem = ({ item, onSelect, indices, getSelectedItems, cancel }) => {
                 </View>
             </TouchableOpacity>
 
-            <View style={{ alignItems: "center" }}>
-                <View style={{
-                    borderWidth: 1,
-                    alignSelf: "flex-start",
-                }}>
-
+            <View style={{ alignItems: "center", }}>
+                <View style={{ alignSelf: "flex-start", flex: 1 }}>
                     <FlatList
                         data={getSelectedItems()}
-
-                        renderItem={({ item }) => {
-                            return (
-                                <View style={{
-                                    padding: 4,
-                                    borderRadius: 20,
-                                    backgroundColor: Colors.maincolor,
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    margin: 7,
-                                    flexDirection: "row"
-                                }}>
+                        keyExtractor={(item) => item._id}
+                        horizontal={true}
+                        renderItem={(x) => {
+                            return item?._id === x.item?.parentId ?
+                                <View style={styles.tag}>
                                     <Text style={{
-                                        color: Colors.white
-                                    }}> {item.subCatName} </Text>
+                                        color: Colors.white,
+                                        fontFamily: Fonts.MetropolisMedium,
+                                        flex: 1
+                                    }}> {x.item.subCatName} </Text>
                                     <FontAwesome
                                         name="window-close"
                                         color={Colors.white}
                                         size={13}
-                                        style={{ marginStart: 3, }}
-                                        onPress={() => cancel()} />
-                                </View>
-                            )
+                                        style={{ marginStart: 2 }}
+                                        onPress={() => cancel(x.item._id)} />
+                                </View> : null
                         }} />
-                </View>
 
+                </View>
                 <FlatList
                     data={item.subCategoryData}
                     renderItem={({ item, }) => {
@@ -389,6 +383,15 @@ const styles = StyleSheet.create({
         bottom: 0,
         width: "100%",
         alignItems: "center"
+    },
+    tag: {
+        padding: 6,
+        borderRadius: 20,
+        backgroundColor: Colors.maincolor,
+        alignItems: "center",
+        justifyContent: "center",
+        margin: 7,
+        flexDirection: "row",
     },
     round: {
         height: 50,

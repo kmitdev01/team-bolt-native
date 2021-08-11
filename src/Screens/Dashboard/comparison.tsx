@@ -10,7 +10,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 const comparison = ({ navigation, route }) => {
     const [selected, setSelected] = useState('');
     const { sub } = route.params
-    console.log(sub[1].subCatName, "subcatory==============")
 
     const renderSubCat = (x, y) => {
         const isDensityGreater = Number(x.density) <= Number(y.density);
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
         borderWidth: 1
     },
     num: {
-        fontSize: 34,
+        fontSize: 31,
         fontFamily: Fonts.MetropolisSemiBold,
         color: Colors.maincolor,
     },
